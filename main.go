@@ -42,7 +42,7 @@ func main() {
 	}
 
 	for j := float64(imageHeight - 1); j >= 0; j-- {
-		log.Printf("scan lines remaining: %d", int(j))
+		// log.Printf("scan lines remaining: %d", int(j))
 		for i := float64(0); i < float64(imageWidth); i++ {
 			u := i / float64(imageWidth-1)
 			v := j / float64(imageHeight-1)
@@ -59,5 +59,5 @@ func main() {
 		}
 	}
 
-	log.Println("done")
+	// log.Println("done")
 }
