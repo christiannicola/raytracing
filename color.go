@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"math"
 )
 
 func writeColor(w io.Writer, pixelColor vec3) error {
@@ -16,28 +17,36 @@ func writeColor(w io.Writer, pixelColor vec3) error {
 }
 
 func rayColor(r *ray) vec3 {
-	if hitSphere(newVec3(0, 0, -1), 0.5, r) {
-		return newVec3(1, 0, 0)
+	var target float64
+
+	if target = hitSphere(newVec3(0, 0, -1), 0.5, r); target > 0 {
+		n := unitVector(subtractVec3(r.at(target), newVec3(0, 0, -1)))
+
+		return multiplyVec3ByFactor(newVec3(n.x()+1, n.y()+1, n.z()+1), 0.5)
 	}
 
 	unitDirection := unitVector(r.direction)
 
-	t := 0.5 * (unitDirection.y() + 1.0)
+	target = 0.5 * (unitDirection.y() + 1.0)
 
-	whiteColor := multiplyVec3ByFactor(newVec3(1.0, 1.0, 1.0), 1.0-t)
-	blueColor := multiplyVec3ByFactor(newVec3(0.5, 0.7, 1.0), t)
+	whiteColor := multiplyVec3ByFactor(newVec3(1.0, 1.0, 1.0), 1.0-target)
+	blueColor := multiplyVec3ByFactor(newVec3(0.5, 0.7, 1.0), target)
 
 	return addVec3(whiteColor, blueColor)
 }
 
-func hitSphere(center vec3, radius float64, r *ray) bool {
+func hitSphere(center vec3, radius float64, r *ray) float64 {
 	originCenter := subtractVec3(r.origin, center)
 
-	a := dot(r.direction, r.direction)
-	b := dot(originCenter, r.direction) * 2.0
-	c := dot(originCenter, originCenter) - radius*radius
+	a := r.direction.lengthSquared()
+	halfB := dot(originCenter, r.direction)
+	c := originCenter.lengthSquared() - radius*radius
 
-	discriminant := b*b - 4*a*c
+	discriminant := halfB*halfB - a*c
 
-	return discriminant > 0
+	if discriminant < 0 {
+		return -1.0
+	}
+
+	return (-halfB - math.Sqrt(discriminant)) / a
 }
