@@ -33,18 +33,15 @@ func main() {
 	}
 
 	for j := float64(imageHeight - 1); j >= 0; j-- {
+		log.Printf("scan lines remaining: %d", int(j))
 		for i := float64(0); i < float64(imageWidth); i++ {
-			r := i / float64(imageWidth-1)
-			g := j / float64(imageHeight-1)
-			b := 0.25
+			pixelColor := newVec3(i/float64(imageWidth-1), j/float64(imageHeight-1), 0.25)
 
-			ir := int(255.999 * float64(r))
-			ig := int(255.999 * float64(g))
-			ib := int(255.999 * float64(b))
-
-			if _, err = fmt.Fprintf(file, "%d %d %d\n", ir, ig, ib); err != nil {
+			if err = writeColor(file, pixelColor); err != nil {
 				log.Fatalf("unable to write scan line to file: %v\n", err)
 			}
 		}
 	}
+
+	log.Println("done")
 }
