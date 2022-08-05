@@ -56,17 +56,43 @@ func (v *vec3) lengthSquared() float64 {
 	return v[0]*v[0] + v[1]*v[1] + v[2]*v[2]
 }
 
+func addVec3(lhs, rhs vec3) vec3 {
+	lhs.add(rhs)
+
+	return lhs
+}
+
+func subtractVec3(lhs, rhs vec3) vec3 {
+	return newVec3(lhs.x()-rhs.x(), lhs.y()-rhs.y(), lhs.z()-rhs.z())
+}
+
+func multiplyVec3(lhs, rhs vec3) vec3 {
+	return newVec3(lhs.x()*rhs.x(), lhs.y()*rhs.y(), lhs.z()*rhs.z())
+}
+
+func multiplyVec3ByFactor(v vec3, f float64) vec3 {
+	v.multiply(f)
+
+	return v
+}
+
+func divideVec3(v vec3, d float64) vec3 {
+	v.divide(d)
+
+	return v
+}
+
 func (v *vec3) debugPrint(w io.Writer) error {
 	_, err := fmt.Fprintf(w, "%f %f %f", v.x(), v.y(), v.z())
 
 	return err
 }
 
-func dot(u *vec3, v *vec3) float64 {
+func dot(u vec3, v vec3) float64 {
 	return u.x()*v.x() + u.y()*v.y() + u.z()*v.z()
 }
 
-func cross(u *vec3, v *vec3) vec3 {
+func cross(u vec3, v vec3) vec3 {
 	return newVec3(u.y()*v.z()-u.z()*v.y(), u.z()*v.x()-u.x()*v.z(), u.x()*v.y()-u.y()*v.x())
 }
 
