@@ -118,3 +118,17 @@ func randomInUnitSphere() vec3 {
 		}
 	}
 }
+
+func randomUnitVector() vec3 {
+	return unitVector(randomInUnitSphere())
+}
+
+func randomInHemisphere(normal vec3) vec3 {
+	inUnitSphere := randomInUnitSphere()
+
+	if dot(inUnitSphere, normal) > 0.0 {
+		return inUnitSphere
+	}
+
+	return inUnitSphere.negate()
+}
