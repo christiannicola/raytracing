@@ -1,3 +1,5 @@
 .idea
 image.ppm
 raytracing
+cpu_profile
+mem_profile

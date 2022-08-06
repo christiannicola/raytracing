@@ -18,11 +18,18 @@ func writeColor(w io.Writer, pixelColor vec3, samplesPerPixel int) error {
 	return err
 }
 
-func rayColor(r *ray, world hittable) vec3 {
+func rayColor(r *ray, world hittable, depth int) vec3 {
 	rec := newHitRecord()
 
+	if depth <= 0 {
+		return emptyVec3()
+	}
+
 	if world.hit(r, 0, infinity, &rec) {
-		return multiplyVec3ByFactor(addVec3(rec.normal, newVec3(1.0, 1.0, 1.0)), 0.5)
+		target := addVec3(addVec3(rec.p, rec.normal), randomInUnitSphere())
+		randomRay := newRay(rec.p, subtractVec3(target, rec.p))
+
+		return multiplyVec3ByFactor(rayColor(&randomRay, world, depth-1), 0.5)
 	}
 
 	unitDirection := unitVector(r.direction)

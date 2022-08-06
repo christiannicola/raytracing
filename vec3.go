@@ -101,3 +101,20 @@ func unitVector(v vec3) vec3 {
 
 	return v
 }
+
+func random() vec3 {
+	return newVec3(randomFloat64(), randomFloat64(), randomFloat64())
+}
+
+func randomMinMax(min, max float64) vec3 {
+	return newVec3(randomFloat64MinMax(min, max), randomFloat64MinMax(min, max), randomFloat64MinMax(min, max))
+}
+
+func randomInUnitSphere() vec3 {
+	for {
+		p := random()
+		if p.lengthSquared() < 1 {
+			return p
+		}
+	}
+}
