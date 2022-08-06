@@ -16,23 +16,17 @@ func writeColor(w io.Writer, pixelColor vec3) error {
 	return err
 }
 
-func rayColor(r *ray) vec3 {
-	var target float64
+func rayColor(r *ray, world hittable) vec3 {
+	rec := newHitRecord()
 
-	if target = hitSphere(newVec3(0, 0, -1), 0.5, r); target > 0 {
-		n := unitVector(subtractVec3(r.at(target), newVec3(0, 0, -1)))
-
-		return multiplyVec3ByFactor(newVec3(n.x()+1, n.y()+1, n.z()+1), 0.5)
+	if world.hit(r, 0, infinity, &rec) {
+		return multiplyVec3ByFactor(addVec3(rec.normal, newVec3(1.0, 1.0, 1.0)), 0.5)
 	}
 
 	unitDirection := unitVector(r.direction)
+	t := 0.5 * (unitDirection.y() + 1.0)
 
-	target = 0.5 * (unitDirection.y() + 1.0)
-
-	whiteColor := multiplyVec3ByFactor(newVec3(1.0, 1.0, 1.0), 1.0-target)
-	blueColor := multiplyVec3ByFactor(newVec3(0.5, 0.7, 1.0), target)
-
-	return addVec3(whiteColor, blueColor)
+	return addVec3(multiplyVec3ByFactor(newVec3(1.0, 1.0, 1.0), 1.0-t), multiplyVec3ByFactor(newVec3(0.5, 0.7, 1.0), t))
 }
 
 func hitSphere(center vec3, radius float64, r *ray) float64 {
