@@ -12,16 +12,12 @@ func main() {
 		file     *os.File
 		fileName *string
 		// Image
-		imageAspectRatio = 16.0 / 9.0
-		imageWidth       = 800
-		imageHeight      = int(float64(imageWidth) / imageAspectRatio)
+		imageAspectRatio     = 16.0 / 9.0
+		imageWidth           = 800
+		imageHeight          = int(float64(imageWidth) / imageAspectRatio)
+		imageSamplesPerPixel = 100
 		// Camera
-		cameraViewportHeight = 2.0
-		cameraViewportWidth  = imageAspectRatio * cameraViewportHeight
-		cameraFocalLength    = 1.0
-		cameraOrigin         = emptyVec3()
-		cameraHorizontal     = newVec3(cameraViewportWidth, 0, 0)
-		cameraVertical       = newVec3(0, cameraViewportHeight, 0)
+		cam = newCamera()
 		// World
 		world = newHittableList()
 		err   error
@@ -34,9 +30,6 @@ func main() {
 		log.Fatalf("unable to open file: %v\n", err)
 	}
 
-	// Position
-	lowerLeftCorner := subtractVec3(subtractVec3(subtractVec3(cameraOrigin, divideVec3(cameraHorizontal, 2.0)), divideVec3(cameraVertical, 2.0)), newVec3(0, 0, cameraFocalLength))
-
 	world.add(newSphere(newVec3(0, 0, -1), 0.5))
 	world.add(newSphere(newVec3(0, -100.5, -1), 100))
 
@@ -45,22 +38,19 @@ func main() {
 	}
 
 	for j := float64(imageHeight - 1); j >= 0; j-- {
-		// log.Printf("scan lines remaining: %d", int(j))
 		for i := float64(0); i < float64(imageWidth); i++ {
-			u := i / float64(imageWidth-1)
-			v := j / float64(imageHeight-1)
+			pixelColor := newVec3(0, 0, 0)
 
-			direction := subtractVec3(addVec3(addVec3(lowerLeftCorner, multiplyVec3ByFactor(cameraHorizontal, u)), multiplyVec3ByFactor(cameraVertical, v)), cameraOrigin)
+			for s := 0; s < imageSamplesPerPixel; s++ {
+				u := (i + randomFloat64()) / float64(imageWidth-1)
+				v := (j + randomFloat64()) / float64(imageHeight-1)
+				r := cam.getRay(u, v)
+				pixelColor.add(rayColor(&r, &world))
+			}
 
-			r := newRay(cameraOrigin, direction)
-
-			pixelColor := rayColor(&r, &world)
-
-			if err = writeColor(file, pixelColor); err != nil {
+			if err = writeColor(file, pixelColor, imageSamplesPerPixel); err != nil {
 				log.Fatalf("unable to write scan line to file: %v\n", err)
 			}
 		}
 	}
-
-	// log.Println("done")
 }

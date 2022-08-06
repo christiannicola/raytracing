@@ -6,12 +6,14 @@ import (
 	"math"
 )
 
-func writeColor(w io.Writer, pixelColor vec3) error {
-	r := int(255.999 * pixelColor.x())
-	g := int(255.999 * pixelColor.y())
-	b := int(255.999 * pixelColor.z())
+func writeColor(w io.Writer, pixelColor vec3, samplesPerPixel int) error {
+	scale := 1.0 / float64(samplesPerPixel)
 
-	_, err := fmt.Fprintf(w, "%d %d %d\n", r, g, b)
+	r := clamp(pixelColor.x()*scale, 0.0, 0.999) * 256
+	g := clamp(pixelColor.y()*scale, 0.0, 0.999) * 256
+	b := clamp(pixelColor.z()*scale, 0.0, 0.999) * 256
+
+	_, err := fmt.Fprintf(w, "%d %d %d\n", int(r), int(g), int(b))
 
 	return err
 }
@@ -43,4 +45,16 @@ func hitSphere(center vec3, radius float64, r *ray) float64 {
 	}
 
 	return (-halfB - math.Sqrt(discriminant)) / a
+}
+
+func clamp(x, min, max float64) float64 {
+	if x < min {
+		return min
+	}
+
+	if x > max {
+		return max
+	}
+
+	return x
 }
