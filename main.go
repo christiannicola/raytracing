@@ -44,8 +44,15 @@ func main() {
 
 	defer pprof.StopCPUProfile()
 
-	world.add(newSphere(newVec3(0, 0, -1), 0.5))
-	world.add(newSphere(newVec3(0, -100.5, -1), 100))
+	materialGround := newLambertian(newVec3(0.8, 0.8, 0.0))
+	materialCenter := newLambertian(newVec3(0.7, 0.3, 0.3))
+	materialLeft := newMetal(newVec3(0.8, 0.8, 0.8), 0.3)
+	materialRight := newMetal(newVec3(0.8, 0.6, 0.2), 1.0)
+
+	world.add(newSphere(newVec3(0.0, -100.5, -1.0), 100.0, materialGround))
+	world.add(newSphere(newVec3(0.0, 0.0, -1.0), 0.5, materialCenter))
+	world.add(newSphere(newVec3(-1.0, 0.0, -1.0), 0.5, materialLeft))
+	world.add(newSphere(newVec3(1.0, 0.0, -1.0), 0.5, materialRight))
 
 	if _, err = fmt.Fprintf(imageFile, "P3\n%d %d\n255\n", imageWidth, imageHeight); err != nil {
 		log.Fatalf("unable to writer PPM header: %v", err)

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
-	"math"
+	math "math"
 )
 
 type vec3 [3]float64
@@ -54,6 +54,12 @@ func (v *vec3) length() float64 {
 
 func (v *vec3) lengthSquared() float64 {
 	return v[0]*v[0] + v[1]*v[1] + v[2]*v[2]
+}
+
+func (v *vec3) neadZero() bool {
+	s := 1e-8
+
+	return (math.Abs(v.x()) < s) && (math.Abs(v.y()) < s) && (math.Abs(v.z()) < s)
 }
 
 func addVec3(lhs, rhs vec3) vec3 {
@@ -131,4 +137,8 @@ func randomInHemisphere(normal vec3) vec3 {
 	}
 
 	return inUnitSphere.negate()
+}
+
+func reflect(v, n vec3) vec3 {
+	return subtractVec3(v, multiplyVec3ByFactor(n, 2*dot(v, n)))
 }

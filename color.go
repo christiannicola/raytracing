@@ -26,10 +26,14 @@ func rayColor(r *ray, world hittable, depth int) vec3 {
 	}
 
 	if world.hit(r, 0.001, infinity, &rec) {
-		target := addVec3(addVec3(rec.p, rec.normal), randomInHemisphere(rec.normal))
-		randomRay := newRay(rec.p, subtractVec3(target, rec.p))
+		scattered := ray{}
+		attenuation := emptyVec3()
 
-		return multiplyVec3ByFactor(rayColor(&randomRay, world, depth-1), 0.5)
+		if rec.material.scatter(r, &rec, &attenuation, &scattered) {
+			return multiplyVec3(attenuation, rayColor(&scattered, world, depth-1))
+		}
+
+		return emptyVec3()
 	}
 
 	unitDirection := unitVector(r.direction)

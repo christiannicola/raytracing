@@ -12,13 +12,15 @@ type (
 	hitRecord struct {
 		p         vec3
 		normal    vec3
+		material  material
 		t         float64
 		frontFace bool
 	}
 
 	sphere struct {
-		center vec3
-		radius float64
+		center   vec3
+		radius   float64
+		material material
 	}
 
 	hittableList struct {
@@ -41,8 +43,8 @@ func (h *hitRecord) setFaceNormal(r *ray, outwardNormal vec3) {
 	}
 }
 
-func newSphere(center vec3, radius float64) sphere {
-	return sphere{center, radius}
+func newSphere(center vec3, radius float64, m material) sphere {
+	return sphere{center, radius, m}
 }
 
 func (s sphere) hit(r *ray, tMin, tMax float64, rec *hitRecord) bool {
@@ -73,6 +75,7 @@ func (s sphere) hit(r *ray, tMin, tMax float64, rec *hitRecord) bool {
 
 	outwardNormal := divideVec3(subtractVec3(rec.p, s.center), s.radius)
 	rec.setFaceNormal(r, outwardNormal)
+	rec.material = s.material
 
 	return true
 }
