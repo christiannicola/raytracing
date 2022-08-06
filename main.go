@@ -45,13 +45,14 @@ func main() {
 	defer pprof.StopCPUProfile()
 
 	materialGround := newLambertian(newVec3(0.8, 0.8, 0.0))
-	materialCenter := newLambertian(newVec3(0.7, 0.3, 0.3))
-	materialLeft := newMetal(newVec3(0.8, 0.8, 0.8), 0.3)
-	materialRight := newMetal(newVec3(0.8, 0.6, 0.2), 1.0)
+	materialCenter := newLambertian(newVec3(0.1, 0.2, 0.5))
+	materialLeft := newDielectric(1.5)
+	materialRight := newMetal(newVec3(0.8, 0.6, 0.2), 0.0)
 
 	world.add(newSphere(newVec3(0.0, -100.5, -1.0), 100.0, materialGround))
 	world.add(newSphere(newVec3(0.0, 0.0, -1.0), 0.5, materialCenter))
 	world.add(newSphere(newVec3(-1.0, 0.0, -1.0), 0.5, materialLeft))
+	world.add(newSphere(newVec3(-1.0, 0.0, -1.0), -0.4, materialLeft))
 	world.add(newSphere(newVec3(1.0, 0.0, -1.0), 0.5, materialRight))
 
 	if _, err = fmt.Fprintf(imageFile, "P3\n%d %d\n255\n", imageWidth, imageHeight); err != nil {
@@ -67,7 +68,7 @@ func main() {
 				u := (i + randomFloat64()) / float64(imageWidth-1)
 				v := (j + randomFloat64()) / float64(imageHeight-1)
 				r := cam.getRay(u, v)
-				pixelColor.add(rayColor(&r, &world, imageMaxDepth))
+				pixelColor = addVec3(rayColor(&r, &world, imageMaxDepth), pixelColor)
 			}
 
 			if err = writeColor(imageFile, pixelColor, imageSamplesPerPixel); err != nil {

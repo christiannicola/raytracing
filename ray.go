@@ -11,7 +11,7 @@ func newRay(origin, direction vec3) ray {
 
 func (r ray) at(t float64) vec3 {
 	r.direction.multiply(t)
-	r.origin.add(r.direction)
+	r.origin = addVec3(r.origin, r.direction)
 
 	return r.origin
 }

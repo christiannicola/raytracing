@@ -32,10 +32,10 @@ func (v *vec3) negate() vec3 {
 	return newVec3(-v.x(), -v.y(), -v.z())
 }
 
-func (v *vec3) add(r vec3) {
-	v[0] += r[0]
-	v[1] += r[1]
-	v[2] += r[2]
+func (v *vec3) add(f float64) {
+	v[0] += f
+	v[1] += f
+	v[2] += f
 }
 
 func (v *vec3) multiply(f float64) {
@@ -56,16 +56,14 @@ func (v *vec3) lengthSquared() float64 {
 	return v[0]*v[0] + v[1]*v[1] + v[2]*v[2]
 }
 
-func (v *vec3) neadZero() bool {
+func (v *vec3) nearZero() bool {
 	s := 1e-8
 
 	return (math.Abs(v.x()) < s) && (math.Abs(v.y()) < s) && (math.Abs(v.z()) < s)
 }
 
 func addVec3(lhs, rhs vec3) vec3 {
-	lhs.add(rhs)
-
-	return lhs
+	return newVec3(lhs.x()+rhs.x(), lhs.y()+rhs.y(), lhs.z()+rhs.z())
 }
 
 func subtractVec3(lhs, rhs vec3) vec3 {
@@ -141,4 +139,13 @@ func randomInHemisphere(normal vec3) vec3 {
 
 func reflect(v, n vec3) vec3 {
 	return subtractVec3(v, multiplyVec3ByFactor(n, 2*dot(v, n)))
+}
+
+func refract(uv, n vec3, etaiOverEtat float64) vec3 {
+	cosTheta := math.Min(dot(uv.negate(), n), 1.0)
+
+	rOutPerp := multiplyVec3ByFactor(addVec3(multiplyVec3ByFactor(n, cosTheta), uv), etaiOverEtat)
+	rOutParallel := multiplyVec3ByFactor(n, -(math.Sqrt(math.Abs(1.0 - rOutPerp.lengthSquared()))))
+
+	return addVec3(rOutParallel, rOutPerp)
 }
