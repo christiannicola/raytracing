@@ -48,7 +48,7 @@ func (v *vec3) divide(d float64) {
 	v.multiply(1 / d)
 }
 
-func (v *vec3) length() float64 {
+func (v vec3) length() float64 {
 	return math.Sqrt(v.lengthSquared())
 }
 
@@ -148,4 +148,16 @@ func refract(uv, n vec3, etaiOverEtat float64) vec3 {
 	rOutParallel := multiplyVec3ByFactor(n, -(math.Sqrt(math.Abs(1.0 - rOutPerp.lengthSquared()))))
 
 	return addVec3(rOutParallel, rOutPerp)
+}
+
+func randomInUnitDisk() vec3 {
+	for {
+		p := newVec3(randomFloat64MinMax(-1, 1), randomFloat64MinMax(-1, 1), 0)
+
+		if p.lengthSquared() >= 1 {
+			continue
+		}
+
+		return p
+	}
 }
