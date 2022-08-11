@@ -21,7 +21,7 @@ func main() {
 		imageSamplesPerPixel = 100
 		imageMaxDepth        = 50
 		// Camera
-		cam = newCamera()
+		cam = newCamera(newVec3(-2, 2, 1), newVec3(0, 0, -1), newVec3(0, 1, 0), 90, imageAspectRatio)
 		// World
 		world = newHittableList()
 		err   error
